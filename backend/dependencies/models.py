@@ -1,12 +1,10 @@
-from pydantic import BaseModel, StrictStr, StrictInt, EmailStr
+from pydantic import BaseModel, StrictStr, EmailStr
 
 
-class LoginForm(BaseModel):
-    email       : EmailStr
-    password    : StrictStr
-
-    
 class RegisterForm(BaseModel):
-    email       : EmailStr
-    username    : StrictStr
-    password    : StrictStr 
+    username       : StrictStr
+
+
+class AddPieceForm(BaseModel):
+    pass
+ 

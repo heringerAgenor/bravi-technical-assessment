@@ -1,23 +1,16 @@
-from db.db_main import User
-from fastapi_login import LoginManager
+from fastapi import Depends, HTTPException
+from fastapi.security import APIKeyHeader
+from starlette import status
+from db.db_main import Client
 
-# Secret generated using -> import os; print(os.urandom(24).hex()
-SECRET = 'c5f56dd8d21ce8df693bc77787db133301e6c89067b8b14d'
 
-manager = LoginManager(SECRET, '/login', use_cookie=True)
-manager.cookie_name = "bravi_chess"
 
-class NotAuthenticatedException(Exception):
-    pass
+def check_authentication_header(x_api_key: str = Depends(APIKeyHeader(name='X-API-Key'))):
+    client = Client.objects(api_key = x_api_key).first()
+    if client:
+        return {"api_key": x_api_key, "username": client.username}
 
-manager.not_authenticated_exception = NotAuthenticatedException
-
-@manager.user_loader
-async def load_user(email: str):
-    """
-        Procura o usuario do banco e retorna as informações se o encontrar
-    """
-    try:
-        return User.objects(email = email).first()
-    except Exception as e:
-        print('Erro ao buscar dados no middleware')
+    raise HTTPException(
+        status_code=status.HTTP_401_UNAUTHORIZED,
+        detail="Invalid API Key",
+    )
