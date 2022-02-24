@@ -37,6 +37,40 @@ def get_pieces(user = Depends(check_authentication_header)):
         }, status_code=400)
 
 
+@router.get('/board/piece', tags= ["Board"])
+def get_piece(piece_id: str, user = Depends(check_authentication_header)):
+    flag = True
+    try:
+        piece = Board.get_piece(user["api_key"], piece_id)
+    except:
+        flag = False
+        print("Error during board check!")
+        print(traceback.format_exc())
+    
+    if flag:
+        if piece:
+            return JSONResponse(content={
+                "status": "ok",
+                "data": {"piece": piece[0][1]},
+                "message": "",
+                "error": None,
+            }, status_code= 200)
+        
+        return JSONResponse(content={
+            "status": "ok",
+            "data": {},
+            "message": "No piece was found!",
+            "error": None,
+        }, status_code= 404)
+
+    return JSONResponse(content={
+            "status": "error",
+            "data": {},
+            "message": "Generic error!",
+            "error": "generic_error",
+        }, status_code=500)
+
+
 @router.post('/board/add_piece', tags=["Board"])
 def add_piece(piece: AddPiece, user = Depends(check_authentication_header)):
     piece = piece.dict()
@@ -51,23 +85,23 @@ def add_piece(piece: AddPiece, user = Depends(check_authentication_header)):
             "data": {"piece_id": piece_id},
             "message": "Piece registered successfully!",
             "error": None,
-        }, status_code= 200)
+        }, status_code= 404)
 
     return JSONResponse(content={
             "status": "error",
             "data": {},
             "message": "Generic error!",
             "error": "generic_error",
-        }, status_code=400)
+        }, status_code=500)
 
 
-@router.put('/board/place_piece', tags=["Board"])
-def place_piece(piece_coordinate: PlacePiece, user = Depends(check_authentication_header)):
+@router.put('/board/move_piece', tags=["Board"])
+def move_piece(piece_coordinate: PlacePiece, user = Depends(check_authentication_header)):
     # TODO implment error handling here
     
     piece_coordinate = piece_coordinate.dict()
     piece = Board.get_piece(api_key = user["api_key"], piece_id = piece_coordinate["piece_id"])
-    piece = copy.deepcopy(piece)   # I was getting some issues with memory reference and thhe garbage collector but creating a deepcopy solves my problem
+    piece = copy.deepcopy(piece)   # I was getting some issues with memory reference and the garbage collector but creating a deepcopy solves my problem
     if piece:
         response_data = {}
         piece[0][1]["position"] = f'{piece_coordinate["coordinate"][0]}{piece_coordinate["coordinate"][1]}'
@@ -87,3 +121,28 @@ def place_piece(piece_coordinate: PlacePiece, user = Depends(check_authenticatio
             "message": "No piece was found!",
             "error": None,
         }, status_code= 200)
+
+
+@router.delete('/board/remove_piece', tags=['Board'])
+def remove_piece(piece_id: str, user = Depends(check_authentication_header)):
+    flag = True
+    try:
+        Board.remove_piece(user["api_key"], piece_id)
+    except:
+        flag = False
+        print(traceback.format_exc())
+    if flag:
+        return JSONResponse(content={
+            "status": "ok",
+            "data": {},
+            "message": "Piece deleted successfully!",
+            "error": None,
+        }, status_code= 200)
+
+    return JSONResponse(content={
+            "status": "error",
+            "data": {},
+            "message": "No piece was found!",
+            "error": "Generic error. Try again later!",
+        }, status_code= 500)
+ 

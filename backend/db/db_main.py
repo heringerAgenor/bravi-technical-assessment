@@ -71,5 +71,8 @@ class Board(Document):
     @classmethod
     def update_piece(cls, api_key: str, piece_index_position: int, new_content: dict ):
         return cls.objects(client = api_key).update(__raw__ = {"$set": {f"pieces.{piece_index_position}": new_content}})
+        #return cls.objects(client = api_key).update(set__pieces = {f"pieces.$.piece_id": new_content})
 
-        #f"pieces.{piece_index_position}"
+    @classmethod
+    def remove_piece(cls, api_key: str, piece_id: str):
+        return cls.objects(client = api_key).update(pull__pieces = {"piece_id": piece_id})
