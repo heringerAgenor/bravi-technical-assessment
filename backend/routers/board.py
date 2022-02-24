@@ -1,20 +1,21 @@
-from http import client
 from fastapi import APIRouter, Depends
 from fastapi.responses import JSONResponse
 from dependencies.middleware import check_authentication_header
-from dependencies.board_handler import board_handler
+from dependencies.knight_handler import knight_handler
+from dependencies.models import AddPiece, PlacePiece
 from db.db_main import Board
 import traceback
+import shortuuid
+import copy
 
 router = APIRouter()
 
 
-@router.get('/pieces', tags=["Board"])
+@router.get('/board/pieces', tags=["Board"])
 def get_pieces(user = Depends(check_authentication_header)):
     flag = True
     try:
         board = Board.objects(client = user["api_key"]).first()
-        print(board)
     except:
         flag = False
         print("Error during board check!")
@@ -36,13 +37,53 @@ def get_pieces(user = Depends(check_authentication_header)):
         }, status_code=400)
 
 
-@router.post('/add_piece', tags=["Board"])
-def add_piece(user = Depends(check_authentication_header)):
-    flag = True
-    try:
-        board = Board.objects(user = user.id).first()
+@router.post('/board/add_piece', tags=["Board"])
+def add_piece(piece: AddPiece, user = Depends(check_authentication_header)):
+    piece = piece.dict()
+    piece_id = shortuuid.uuid()
+    piece["position"] = ""
+    piece["piece_id"] = piece_id
 
-    except:
-        flag = False
-        print()
+    flag = Board.append_piece(api_key= user["api_key"], new_piece= piece)
+    if flag:
+        return JSONResponse(content={
+            "status": "ok",
+            "data": {"piece_id": piece_id},
+            "message": "Piece registered successfully!",
+            "error": None,
+        }, status_code= 200)
 
+    return JSONResponse(content={
+            "status": "error",
+            "data": {},
+            "message": "Generic error!",
+            "error": "generic_error",
+        }, status_code=400)
+
+
+@router.put('/board/place_piece', tags=["Board"])
+def place_piece(piece_coordinate: PlacePiece, user = Depends(check_authentication_header)):
+    # TODO implment error handling here
+    
+    piece_coordinate = piece_coordinate.dict()
+    piece = Board.get_piece(api_key = user["api_key"], piece_id = piece_coordinate["piece_id"])
+    piece = copy.deepcopy(piece)   # I was getting some issues with memory reference and thhe garbage collector but creating a deepcopy solves my problem
+    if piece:
+        response_data = {}
+        piece[0][1]["position"] = f'{piece_coordinate["coordinate"][0]}{piece_coordinate["coordinate"][1]}'
+        Board.update_piece(user["api_key"], piece[0][0], piece[0][1])
+        if piece[0][1]["type"] == "K":
+            response_data["knight_predictions"] = knight_handler.predict_knight_positions(row=piece_coordinate["coordinate"][1], column=piece_coordinate["coordinate"][0])
+        return JSONResponse(content={
+            "status": "ok",
+            "data": response_data,
+            "message": "Piece moved successfully!",
+            "error": None,
+        }, status_code= 200)
+    
+    return JSONResponse(content={
+            "status": "ok",
+            "data": {},
+            "message": "No piece was found!",
+            "error": None,
+        }, status_code= 200)

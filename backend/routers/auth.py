@@ -1,13 +1,13 @@
 from fastapi import APIRouter
 from fastapi.responses import JSONResponse
-from dependencies.models import RegisterForm
+from dependencies.models import RegisterKey
 from db.db_main import Client
 import secrets
 
 router = APIRouter()
 
 @router.post('/auth/key', tags = ["Auth"])
-def register_usuer(client_form: RegisterForm):
+def register_usuer(client_form: RegisterKey):
     flag = True
     client_form = client_form.dict()
     api_key = secrets.token_urlsafe(30)
