@@ -14,15 +14,15 @@ With the shell opened in the root directory(app folder), run the docker-compose 
 ```console
 docker-compose up -d --build
 ```
-**And that's it. Now your app is running on localhost in the port 8000**
+**And that's it. Now your app is running on localhost in 8000 port.**
 
 # Usage
 After installed with docker-compose, a [interactive documentation is available](http://localhost:8000/docs) for testing and read the endpoints. If you don't wanna make HTTP calls with curl ou wget to interact with the API, you shoud use the GUI Docs.
 
 ## Authentication
-To communicate with the api, **you must generate an API key** and put in headers a field **X-API-Key**. If you don't do that, you'll get a 401, which means that there is not API Key in headers or the key is invalid.
+To communicate with the api, **you must generate an API key** and put in headers a field **X-API-Key**. If you don't do that, you'll get a 401, which means that there is no API Key in headers or key is invalid.
   
- You can generate an API key reaching the endpoint by providing a valid username:
+ You can generate an API key reaching the endpoint by providing a valid username.
  
  `POST /auth/key`
  
@@ -43,6 +43,7 @@ content-type: application/json
 Grab your key and keep it safe, you'll need it.
 
 ## Interacting with the Board
+
 Now you're ready to go. There are CRUD operations available to store, read, update and delete your pieces on the board. Available endpoints:
 
 - Adding a piece
@@ -84,7 +85,7 @@ server: uvicorn
  
  - Get a piece
  
- You can fetch a specific piece stored in the API by providing the **piece_id** as query string parameter 
+ You can fetch a specific piece stored in the API by providing the **piece_id** as query string parameter.
  
  `GET /board/get_piece`
  
@@ -119,7 +120,7 @@ curl -X 'GET' \
  
 - Get all pieces
 
-You can get all pieces in one request if you want
+You can get all pieces in one request if you want.
  
 `GET /board/get_pieces`
 
@@ -163,7 +164,7 @@ server: uvicorn
 - Move a piece
 
 Here you can change the position of a piece by giving an appropriate cell coordiante in algebraic notation. As an example, a K in e4 position.
-If you move a Knight piece (N), you'll get all possibles moves in two turns
+If you move a Knight piece (N), you'll get all possibles moves in two turns.
 
 `POST /board/move_piece`
 
@@ -221,7 +222,7 @@ curl -X 'PUT' \
 
 - Remove a piece
 
-Remove a piece from the chess board by providing the piece_id as a query string
+Remove a piece from the chess board by providing the piece_id as a query string.
 
 `DELETE /board/remove_piece`
 
