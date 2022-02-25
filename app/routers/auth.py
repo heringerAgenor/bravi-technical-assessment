@@ -7,7 +7,11 @@ import secrets
 router = APIRouter()
 
 @router.post('/auth/key', tags = ["Auth"])
-def register_usuer(client_form: RegisterKey):
+def generate_key(client_form: RegisterKey):
+    """
+    ## Generates a random shortUUID to serve as API Key.
+    """
+
     flag = True
     client_form = client_form.dict()
     api_key = secrets.token_urlsafe(30)
@@ -18,7 +22,7 @@ def register_usuer(client_form: RegisterKey):
         return JSONResponse(content={
             "status": "ok",
             "data": {"api_key": api_key},
-            "message": "Successfully Registered!",
+            "message": "Welcome to Chess Board Storage. The Api Key grants access to your chess board, therefore, keep it safe.",
             "error": None,
         })
     return JSONResponse(content={
@@ -27,5 +31,3 @@ def register_usuer(client_form: RegisterKey):
         "message": "Generic error!",
         "error": "generic_error",
     }, status_code=400)
-
-# TODO generate new api key and delete

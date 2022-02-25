@@ -13,6 +13,9 @@ router = APIRouter()
 
 @router.get('/board/pieces', tags=["Board"])
 def get_pieces(user = Depends(check_authentication_header)):
+    """
+    ## Returns all available pieces linked to API Key
+    """
     flag = True
     try:
         board = Board.objects(client = user["api_key"]).first()
@@ -39,6 +42,9 @@ def get_pieces(user = Depends(check_authentication_header)):
 
 @router.get('/board/piece', tags= ["Board"])
 def get_piece(piece_id: str, user = Depends(check_authentication_header)):
+    """
+    ## Return a available piece filtered by an **piece_id** linked to API Key
+    """
     flag = True
     try:
         piece = Board.get_piece(user["api_key"], piece_id)
@@ -61,7 +67,7 @@ def get_piece(piece_id: str, user = Depends(check_authentication_header)):
             "data": {},
             "message": "No piece was found!",
             "error": None,
-        }, status_code= 404)
+        }, status_code= 200)
 
     return JSONResponse(content={
             "status": "error",
@@ -73,6 +79,9 @@ def get_piece(piece_id: str, user = Depends(check_authentication_header)):
 
 @router.post('/board/add_piece', tags=["Board"])
 def add_piece(piece: AddPiece, user = Depends(check_authentication_header)):
+    """
+    ## Store a piece and returns a piece_id
+    """
     piece = piece.dict()
     piece_id = shortuuid.uuid()
     piece["position"] = ""
@@ -85,7 +94,7 @@ def add_piece(piece: AddPiece, user = Depends(check_authentication_header)):
             "data": {"piece_id": piece_id},
             "message": "Piece registered successfully!",
             "error": None,
-        }, status_code= 404)
+        }, status_code= 200)
 
     return JSONResponse(content={
             "status": "error",
@@ -97,6 +106,9 @@ def add_piece(piece: AddPiece, user = Depends(check_authentication_header)):
 
 @router.put('/board/move_piece', tags=["Board"])
 def move_piece(piece_coordinate: PlacePiece, user = Depends(check_authentication_header)):
+    """
+    ## Move a piece in the chess board giving by an algebraic notation
+    """
     # TODO implment error handling here
     
     piece_coordinate = piece_coordinate.dict()
@@ -106,7 +118,7 @@ def move_piece(piece_coordinate: PlacePiece, user = Depends(check_authentication
         response_data = {}
         piece[0][1]["position"] = f'{piece_coordinate["coordinate"][0]}{piece_coordinate["coordinate"][1]}'
         Board.update_piece(user["api_key"], piece[0][0], piece[0][1])
-        if piece[0][1]["type"] == "K":
+        if piece[0][1]["type"] == "N":
             response_data["knight_predictions"] = knight_handler.predict_knight_positions(row=piece_coordinate["coordinate"][1], column=piece_coordinate["coordinate"][0])
         return JSONResponse(content={
             "status": "ok",
@@ -125,6 +137,9 @@ def move_piece(piece_coordinate: PlacePiece, user = Depends(check_authentication
 
 @router.delete('/board/remove_piece', tags=['Board'])
 def remove_piece(piece_id: str, user = Depends(check_authentication_header)):
+    """
+    ## Remove a piece from the chess board
+    """
     flag = True
     try:
         Board.remove_piece(user["api_key"], piece_id)

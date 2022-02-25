@@ -5,10 +5,24 @@ valid_columns      = {'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h'}
 class RegisterKey(BaseModel):
     username       : StrictStr
 
-
+    class Config:
+        schema_extra = {
+            "example": {
+                "username": "john_doe",
+            }
+        }
 class AddPiece(BaseModel):
     type           : StrictStr
     color          : StrictStr
+
+    class Config:
+        schema_extra = {
+            "example": {
+                "type": "K",
+                "color": "white"
+            }
+        }
+
 
     @validator('type')
     def type_must_be_valid(cls, v):
@@ -28,6 +42,14 @@ class AddPiece(BaseModel):
 class PlacePiece(BaseModel):
     piece_id       : StrictStr
     coordinate     : StrictStr
+
+    class Config:
+        schema_extra = {
+            "example": {
+                "piece_id": "gQPZQC9hEWQubWVUEPNNCA",
+                "coordinate": "e4"
+            }
+        }
 
     @validator('piece_id')
     def piece_id_length_must_be_twenty_two(cls, v):

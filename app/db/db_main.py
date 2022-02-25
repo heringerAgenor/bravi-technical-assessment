@@ -5,9 +5,8 @@ from mongoengine.connection import connect, disconnect
 from mongoengine.document import Document
 from mongoengine.fields import (StringField, DictField)
 import traceback
-import secrets
 
-connect(db = 'bravi_chess_project', host='localhost', alias='bravi_chess_project') 
+connect(db = 'bravi_chess_project', host='db', port=27017, alias='bravi_chess_project') 
 
 class Client(Document):
     api_key         = StringField(required = True, primary_key = True)

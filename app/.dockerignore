@@ -1,0 +1,12 @@
+teste.py
+__pycache__
+.env
+.gitignore
+venv
+venv/*
+.DS_Store
+.git/*
+*/*.pyc
+*.pyc
+.git
+README.md
