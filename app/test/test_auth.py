@@ -1,9 +1,5 @@
 from fastapi.testclient import TestClient
 
-import sys
-sys.path.append('/home/agenor01/Projetcs/bravi-technical-assessment/app')
-
-
 from main import app
 
 client = TestClient(app)
