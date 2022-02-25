@@ -2,6 +2,14 @@
 
 Chess Board Storage API lets you store a whole Chess Board using a strong api key security based model.
 
+This app was built using modern tools in Python ecosystem, those are:
+
+- FastAPI
+- Pydantic
+- Mongoengine
+- Docker
+- Docker-compose
+
 # Installation
 This project was built using [docker](https://docs.docker.com/engine/install/ubuntu/) and [docker-compose](https://docs.docker.com/compose/install/) in a linux system. Therefore, the recommended way of installation depends those tools. 
 If you're in Windows, use [Docker Desktop](https://docs.docker.com/desktop/windows/install/).
