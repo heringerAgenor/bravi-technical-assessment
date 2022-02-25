@@ -2,7 +2,7 @@
 
 Chess Board Storage API lets you store a whole Chess Board using a strong api key security based model.
 
-This app was built using modern tools in Python ecosystem, those are:
+This app was built using modern tools in Python ecosystem and MongoDB. Toolstack:
 
 - FastAPI
 - Pydantic
@@ -174,7 +174,7 @@ server: uvicorn
 Here you can change the position of a piece by giving an appropriate cell coordiante in algebraic notation. As an example, a K in e4 position.
 If you move a Knight piece (N), you'll get all possibles moves in two turns.
 
-`POST /board/move_piece`
+`PUT /board/move_piece`
 
 ### Request
 ```console
