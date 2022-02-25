@@ -56,7 +56,7 @@ Now you're ready to go. There are CRUD operations available to store, read, upda
 
 - Adding a piece
 
-You can adding a piece by proving the **type** in algebraic notation and **color** of the piece in body parameters:
+You can add a piece by providing the **type** in algebraic notation and **color** of the piece inside body parameters:
 
 `POST /board/add_piece`
 
@@ -93,7 +93,7 @@ server: uvicorn
  
  - Get a piece
  
- You can fetch a specific piece stored in the API by providing the **piece_id** as query string parameter.
+ You can fetch a specific piece stored in the API by providing the **piece_id** as a query string parameter.
  
  `GET /board/get_piece`
  
