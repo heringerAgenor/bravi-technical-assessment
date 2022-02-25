@@ -11,3 +11,5 @@ venv/*
 .git
 README.md
 /test
+test/*
+.test
