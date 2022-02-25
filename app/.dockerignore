@@ -10,3 +10,4 @@ venv/*
 *.pyc
 .git
 README.md
+/test

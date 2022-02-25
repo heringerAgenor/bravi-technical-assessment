@@ -1,5 +1,6 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.testclient import TestClient
 
 from routers import (auth, board)
 
@@ -40,7 +41,7 @@ tags_metadata = [
 
 app = FastAPI(
     title="Chess Board Storage API", 
-    docs_url='/documentation',
+    docs_url='/docs',
     version="0.0.1",
     description = description,
     openapi_tags=tags_metadata,
@@ -58,3 +59,5 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+

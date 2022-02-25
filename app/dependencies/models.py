@@ -1,3 +1,4 @@
+from multiprocessing.sharedctypes import Value
 from pydantic import BaseModel, StrictStr, validator
 
 valid_pieces       = {"K", "Q", "R", "B", "N", "P"}
@@ -11,6 +12,16 @@ class RegisterKey(BaseModel):
                 "username": "john_doe",
             }
         }
+
+
+    @validator('username')
+    def validate_username_length(cls, v):
+        v_length = len(v) 
+        if v_length < 2 or v_length > 10:
+            raise ValueError("Username length must be more or qual to 2 and less than or equal to 10.")
+        elif " " in v:
+            raise ValueError("Username cannot contain whitespaces.")
+        return v
 class AddPiece(BaseModel):
     type           : StrictStr
     color          : StrictStr
@@ -66,6 +77,6 @@ class PlacePiece(BaseModel):
             raise ValueError("Coordinate must have a valid chess Column.") 
         elif not v[1].isnumeric():
             raise ValueError("Coordinate must have valid row number.")
-        elif int(v[1]) > 8:
+        elif int(v[1]) > 8 or int(v[1]) <= 0:
             raise ValueError("Coordinate row must be less or equal to 8.")
         return (v[0], int(v[1]))

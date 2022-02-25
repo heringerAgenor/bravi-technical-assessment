@@ -35,8 +35,8 @@ def get_pieces(user = Depends(check_authentication_header)):
     return JSONResponse(content={
             "status": "error",
             "data": {},
-            "message": "Generic error!",
-            "error": "generic_error",
+            "message": "Generic error. Try gain later!",
+            "error": "error.generic_error",
         }, status_code=400)
 
 
@@ -72,8 +72,8 @@ def get_piece(piece_id: str, user = Depends(check_authentication_header)):
     return JSONResponse(content={
             "status": "error",
             "data": {},
-            "message": "Generic error!",
-            "error": "generic_error",
+            "message": "Generic error. Try gain later!",
+            "error": "error.generic_error",
         }, status_code=500)
 
 
@@ -99,8 +99,8 @@ def add_piece(piece: AddPiece, user = Depends(check_authentication_header)):
     return JSONResponse(content={
             "status": "error",
             "data": {},
-            "message": "Generic error!",
-            "error": "generic_error",
+            "message": "Generic error. Try gain later!",
+            "error": "error.generic_error",
         }, status_code=500)
 
 
@@ -109,30 +109,46 @@ def move_piece(piece_coordinate: PlacePiece, user = Depends(check_authentication
     """
     ## Move a piece in the chess board giving by an algebraic notation
     """
-    # TODO implment error handling here
-    
+
+    flag = True
+
     piece_coordinate = piece_coordinate.dict()
     piece = Board.get_piece(api_key = user["api_key"], piece_id = piece_coordinate["piece_id"])
     piece = copy.deepcopy(piece)   # I was getting some issues with memory reference and the garbage collector but creating a deepcopy solves my problem
-    if piece:
-        response_data = {}
-        piece[0][1]["position"] = f'{piece_coordinate["coordinate"][0]}{piece_coordinate["coordinate"][1]}'
-        Board.update_piece(user["api_key"], piece[0][0], piece[0][1])
-        if piece[0][1]["type"] == "N":
-            response_data["knight_predictions"] = knight_handler.predict_knight_positions(row=piece_coordinate["coordinate"][1], column=piece_coordinate["coordinate"][0])
-        return JSONResponse(content={
-            "status": "ok",
-            "data": response_data,
-            "message": "Piece moved successfully!",
-            "error": None,
-        }, status_code= 200)
+    try:
+        if piece:
+            response_data = {}
+            piece[0][1]["position"] = f'{piece_coordinate["coordinate"][0]}{piece_coordinate["coordinate"][1]}'
+            Board.update_piece(user["api_key"], piece[0][0], piece[0][1])
+            if piece[0][1]["type"] == "N":
+                response_data["knight_predictions"] = knight_handler.predict_knight_positions(row=piece_coordinate["coordinate"][1], column=piece_coordinate["coordinate"][0])
+            return JSONResponse(content={
+                "status": "ok",
+                "data": response_data,
+                "message": "Piece moved successfully!",
+                "error": None,
+            }, status_code= 200)
+    except:
+        flag = False
+        print(traceback.format_exc())
+        print("Generic Error!")
     
+    if flag:
+        return JSONResponse(content={
+                "status": "error",
+                "data": {},
+                "message": "No piece was found!",
+                "error": "piece.invalid_piece",
+            }, status_code= 200)
+ 
     return JSONResponse(content={
-            "status": "ok",
+            "status": "error",
             "data": {},
-            "message": "No piece was found!",
-            "error": None,
-        }, status_code= 200)
+            "message": "Generic error. Try gain later!",
+            "error": "error.generic_error",
+        }, status_code= 500)
+ 
+
 
 
 @router.delete('/board/remove_piece', tags=['Board'])
@@ -154,10 +170,3 @@ def remove_piece(piece_id: str, user = Depends(check_authentication_header)):
             "error": None,
         }, status_code= 200)
 
-    return JSONResponse(content={
-            "status": "error",
-            "data": {},
-            "message": "No piece was found!",
-            "error": "Generic error. Try again later!",
-        }, status_code= 500)
- 
